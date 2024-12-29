@@ -1,0 +1,53 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Оптимизация расчетов{% endblock %}
+
+{% block content %}
+{% load static %}
+<section class="content">
+    <div class="container-fluid">
+        <!-- Article 1 -->
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Khuzhayorov B. KH, Mustafokulov J. A, Dzhiyanov T. O, Zokirov M. S</h3>
+            </div>
+            <div class="box-body">
+                <p>Solute Transport with Non-Equilibrium Adsorption in a Non-Homogeneous Porous Medium</p>
+                <p>Wseas Transactions On Fluid Mechanics</p>
+                <p>DOI: <a href="https://doi.org/10.37394/232013.2022.17.18">10.37394/232013.2022.17.18</a></p>
+                <a href="{% static 'scopus/1.pdf' %}" class="btn btn-primary" download="true"> <i class="fa fa-download"></i> &ensp; Download</a>`
+                <a href="{% static 'scopus/1.pdf' %}" target="_blank" class="btn btn-info"> <i class="fa fa-eye"></i> &ensp; View</a>
+            </div>
+        </div>
+        <!-- Article 2 -->
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Dzhiyanov T. O., Mamatov .Sh, Zokirov M. S</h3>
+            </div>
+            <div class="box-body">
+                <p>Anomalous Solute Transport in an Inhomogeneous Porous Medium Taking into Account Mass Transfer</p>
+                <p>Current Problems in Applied Mathematics and Computer Science and Systems</p>
+                <p>LNNS 702, pp. 98–105, 2023</p>
+                <p>DOI: <a href="https://doi.org/10.1007/978-3-031-34127-4_5">10.1007/978-3-031-34127-4_5</a></p>
+                <a href="{% static 'scopus/2.pdf' %}" class="btn btn-primary" download="true"> <i class="fa fa-download"></i> &ensp; Download</a>`
+                <a href="{% static 'scopus/2.pdf' %}" target="_blank" class="btn btn-info"> <i class="fa fa-eye"></i> &ensp; View</a>
+            </div>
+        </div>
+        <!-- Article 3 -->
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">Khuzhayorov B, Djiyanov T.O, Zokirov M.S</h3>
+            </div>
+            <div class="box-body">
+                <p>Generalized relaxation fractional differential model of fluid filtration in a porous medium</p>
+                <p>International Journal of Applied Mathematics. 2024. Volume 37. №1. Pp.119–132</p>
+                <p>ISSN: 1311-1728 (printed version), ISSN: 1314-8060 (on-line version)</p>
+                <p>DOI: <a href="https://doi.org/10.12732/ijam.v37i1.10">10.12732/ijam.v37i1.10</a></p>
+                <a href="{% static 'scopus/3.pdf' %}" class="btn btn-primary" download="true"> <i class="fa fa-download"></i> &ensp; Download</a>`
+                <a href="{% static 'scopus/3.pdf' %}" target="_blank" class="btn btn-info"> <i class="fa fa-eye"></i> &ensp; View</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

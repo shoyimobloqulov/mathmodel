@@ -1,0 +1,151 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Оптимизация расчетов{% endblock %}
+
+{% block content %}
+{% load static %}
+<!-- Content Header -->
+<section class="content-header">
+    <h1>
+        АЛГОРИТМИЗАЦИЯ РАСЧЕТОВ ПОКАЗАТЕЛЕЙ ПЕРЕНОСА ВЕЩЕСТВ
+        <small>Выбор типа задачи</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Дом</a></li>
+        <li class="active">Панель инструментов</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- Task selection -->
+    <div class="row">
+        <!-- Task 1 -->
+        <div class="col-lg-4 col-xs-6">
+            <div class="small-box custom-box" 
+                onclick="showCard('1-masala.pdf', 'Обобщенная релаксационная дробно-дифференциальная модель фильтрации', 1)">
+                <div class="inner">
+                    <p>Обобщенная релаксационная дробно-дифференциальная модель фильтрации</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-filter"></i>
+                </div>
+                <a href="#" class="btn btn-primary">Подробнее <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- Task 2 -->
+        <div class="col-lg-4 col-xs-6">
+            <div class="small-box custom-box" 
+                onclick="showCard('2-masala.pdf', 'Дробно-дифференциальная модель упруговязкопластичной фильтрации', 2)">
+                <div class="inner">
+                    <p>Дробно-дифференциальная модель упруговязкопластичной фильтрации</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-flask"></i>
+                </div>
+                <a href="#" class="btn btn-primary">Подробнее <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- Task 3 -->
+        <div class="col-lg-4 col-xs-6">
+            <div class="small-box custom-box" 
+                onclick="showCard('3-masala.pdf', 'Модель плоскорадиальной фильтрации с дробными производными', 3)">
+                <div class="inner">
+                    <p>Модель плоскорадиальной фильтрации с дробными производными</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-cogs text-primary"></i>
+                </div>
+                <a href="#" class="btn btn-primary">Подробнее <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card to display PDF -->
+    <div id="pdfCard" class="box" style="display: none; margin-top: 20px;">
+        <div class="box-header with-border">
+            <h3 id="topicTitle" class="box-title"></h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <iframe id="pdfFrame" src="" width="100%" height="500px"></iframe>
+                </div>
+                <div class="col-md-6">
+                    <img id="topicImage" src="" alt="Topic Image" class="img-responsive img-fluid w-100">
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <button onclick="hideCard()" class="btn btn-danger">Закрыть</button>
+            <a id="start" class="btn btn-primary pull-right" href="#">НАЧАТЬ</a>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript -->
+<script>
+    const staticUrl = "{% static 'pdfs/' %}";
+    const imgStaticUrl = "{% static 'images/' %}";
+
+    function showCard(pdf, topic, image_id) {
+
+        document.querySelectorAll('.custom-box').forEach(box => box.classList.remove('active'));
+
+
+        const clickedBox = event.currentTarget;
+        clickedBox.classList.add('active');
+
+
+        clickedBox.querySelector('a').classList.remove('btn-primary')
+        clickedBox.querySelector('a').classList.add('btn-success')
+
+        document.getElementById('pdfFrame').src = staticUrl + pdf;
+        document.getElementById('pdfCard').style.display = 'block';
+        document.getElementById('topicTitle').textContent = topic;
+        document.getElementById('topicImage').src = imgStaticUrl + "image" + image_id + ".png";
+
+        document.getElementById('start').href = "/topic/forms/" + image_id;
+    }
+
+    function hideCard() {
+        document.getElementById('pdfCard').style.display = 'none';
+    }
+</script>
+
+<!-- Custom CSS -->
+<style>
+    .custom-box {
+        background-color: transparent !important;
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        text-align: center;
+        padding: 15px;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .custom-box:hover {
+        border-color: #0956a9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .custom-box.active {
+        border-color: #28a745 !important; 
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4); 
+    }
+    .custom-box .inner p {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+    }
+    .custom-box .icon i {
+        font-size: 40px;
+        color: #666;
+    }
+    .custom-box .small-box-footer {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .custom-box .small-box-footer:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}

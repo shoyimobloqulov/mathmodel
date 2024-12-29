@@ -1,0 +1,77 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Оптимизация расчетов{% endblock %}
+
+{% block content %}
+{% load static %}
+<!-- Content Header -->
+<section class="content-header">
+    <h1>
+        Информация о зарегистрированной программе
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-dashboard"></i> Дом</a></li>
+        <li class="active">О программе</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <!-- Task selection -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Худжаёров Б.Х., Закиров М.С.</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <p>
+                        Математическое моделирование численного исследования аномального фильтрования однородных
+                        жидкостей в пористых средах.
+                    </p>
+                    <p>
+                        Свидетельство о регистрации программы для ЭВМ, Министерство юстиции Республики Узбекистан.<br>
+                        <strong>DGU № 42110</strong>.
+                    </p>
+                    <p>
+                        Зарегистрировано в Государственном реестре программных продуктов Республики Узбекистан
+                        <strong>26.08.2024 г.</strong>.
+                    </p>
+                    <button class="btn btn-primary" data-toggle="collapse" data-target="#programImage"
+                        style="margin-top: 10px;">
+                        Показать/Скрыть изображение <i class="fa fa-image"></i>
+                    </button>
+                    <div id="programImage" class="collapse" style="margin-top: 15px;">
+                        <img src="{% static 'images/a4b4fad6-18d5-4b14-b5b2-e180cdfe4d2c_page-0001.jpg' %}" alt="Изображение программы"
+                            class="img-responsive" style="max-width: 100%; border: 1px solid #ccc; padding: 5px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<style>
+    .box {
+        border: 2px solid #3c8dbc;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .box-header {
+        background-color: #f4f4f4;
+    }
+
+    .box-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+</style>
+
+{% endblock %}
