@@ -3,15 +3,15 @@ from django import forms
 class CalculationForm1(forms.Form):
     permeability = forms.CharField(label='Проницаемость', initial=(10**(-13)), widget=forms.TextInput(attrs={'class': 'form-control', 'type': 'number'}))
     fluid_viscosity = forms.CharField(label='Вязкость жидкости', initial=10**(-2), widget=forms.TextInput(attrs={'class': 'form-control'}))
-    pressure = forms.CharField(label='Давление', initial=10**5, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    elastic_capacity_coefficient = forms.CharField(label='Коэффициент упругоемкости', initial=3 * 10**(-10), widget=forms.TextInput(attrs={'class': 'form-control'}))
-    relaxation_time1 = forms.CharField(label='Время релаксации 1', initial=1000, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    relaxation_time2 = forms.CharField(label='Время релаксации 2', initial=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    pressure = forms.CharField(label='Давление', initial=5*10**5, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    elastic_capacity_coefficient = forms.CharField(label='Коэффициент упругоемкости', initial=3 * 10 **(-10), widget=forms.TextInput(attrs={'class': 'form-control'}))
+    relaxation_time1 = forms.CharField(label='Время релаксации ʎv', initial=1000, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    relaxation_time2 = forms.CharField(label='Время релаксации ʎp', initial=500, widget=forms.TextInput(attrs={'class': 'form-control'}))
     grid_step_direction1 = forms.CharField(label='Шаг сетки по направлению 1', initial=10, widget=forms.TextInput(attrs={'class': 'form-control'}))
     grid_step_direction2 = forms.CharField(label='Шаг сетки по направлению 2', initial=0.5, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    fractional_derivative_time1 = forms.CharField(label='Дробная производная по времени 1', initial=0.9, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    fractional_derivative_time2 = forms.CharField(label='Дробная производная по времени 2', initial=0.7, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    distance = forms.CharField(label='Расстояние', initial=5, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    fractional_derivative_time1 = forms.CharField(label='Дробная производная по времени alfa', initial=0.7, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    fractional_derivative_time2 = forms.CharField(label='Дробная производная по времени beta', initial=1, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    distance = forms.CharField(label='Расстояние', initial=40, widget=forms.TextInput(attrs={'class': 'form-control'}))
     maximum_time = forms.CharField(label='Максимальное время', initial=3600, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 class CalculationForm2(forms.Form):

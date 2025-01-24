@@ -1,8 +1,32 @@
 {% extends 'layouts/app.html' %}
 
-{% block title %}Calculation Results{% endblock %}
+{% block title %}Calculation Form{% endblock %}
 
 {% block content %}
+<style>
+    .loader {
+        border: 16px solid #f3f3f3; 
+        border-top: 16px solid #3498db;
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        margin: auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #loader-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+
 <section class="content-header">
     <h1>Результаты расчетов</h1>
 </section>
@@ -13,9 +37,97 @@
             <h3 class="box-title">Результаты</h3>
         </div>
         <div class="box-body">
-            <p>{{ result }}</p>
+            <div id="loader-container">
+                <div class="loader" id="loader"></div>
+            </div>
+            <p id="data" style="display: none;">Loading results...</p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="chart" style="display: none;"></canvas>
+                </div>
+            </div>
+            
             <a href="{% url 'home' %}" class="btn btn-primary">Назад</a>
         </div>
     </div>
 </section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function () {
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        function sendDataToFunction(form_id, data, functionUrl, callback) {
+            $.ajax({
+                type: "POST",
+                url: functionUrl,
+                headers: { "X-CSRFToken": csrftoken },
+                data: {
+                    'form_id': form_id,
+                    'data': JSON.stringify(data),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    callback(response);
+                }
+            });
+        }
+
+        const form_id = {{ form_id }};
+        const data = {{ data|safe }};
+        sendDataToFunction(form_id, data, '/calculate/' + form_id + '/', function (response) {
+            $('#data').html(response.data);
+            $('#loader-container').hide();
+            $('#data').show();
+
+            const chartData = response.data;
+            const ctx = document.getElementById('chart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.x,
+                    datasets: [{
+                        label: 'Pressure',
+                        data: chartData.y,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Distance'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Pressure'
+                            }
+                        }
+                    }
+                }
+            });
+            $('#chart').show();
+        });
+    });
+</script>
+
 {% endblock %}

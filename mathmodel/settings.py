@@ -26,8 +26,9 @@ SECRET_KEY = 'django-insecure-swananwesa^vyw#^j841^rwpm0eorplyz__77rd&53l@xu14@-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+APPEND_SLASH = False
 
 # Application definition
 
@@ -38,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user'
+    'user',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mathmodel.urls'
+ASGI_APPLICATION = 'mathmodel.asgi.application'
 
 TEMPLATES = [
     {
