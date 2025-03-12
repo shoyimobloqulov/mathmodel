@@ -91,6 +91,57 @@
         const form_id = {{ form_id }};
         const data = {{ data|safe }};
         sendDataToFunction(form_id, data, '/calculate/' + form_id + '/', function (response) {
+                $('#data').html(response.data);
+                $('#loader-container').hide();
+                $('#data').show();
+
+                const ctx = document.getElementById('chart').getContext('2d');
+
+                const chartData = response.data;
+                const datasets = [];
+
+                const colors = {
+                    "1.0": "rgba(255, 99, 132, 1)",
+                    "0.7": "rgba(54, 162, 235, 1)",
+                    "0.5": "rgba(75, 192, 192, 1)"
+                };
+
+                Object.keys(chartData).forEach(key => {
+                    datasets.push({
+                        label: `α = ${key}`,
+                        data: chartData[key].y,
+                        borderColor: colors[key],
+                        borderWidth: 2,
+                        fill: false
+                    });
+                });
+
+                const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData[1.0].x, 
+                        datasets: datasets
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Distance'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Pressure'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                $('#chart').show();
+            });
             $('#data').html(response.data);
             $('#loader-container').hide();
             $('#data').show();
