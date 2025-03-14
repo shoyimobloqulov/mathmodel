@@ -8,4 +8,5 @@ urlpatterns = [
     path('thesis',views.thesis,name="thesis"),
     path('scopus',views.scopus,name='scopus'),
     path('calculate/<int:id>/', views.calculate, name='calculate'),
+    path('code',views.code,name='code')
 ]

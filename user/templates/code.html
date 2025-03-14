@@ -1,0 +1,429 @@
+{% extends 'layouts/app.html' %}
+
+{% block title %}Оптимизация расчетов{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .code-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    .copy-btn {
+        position: absolute;
+        top: 5px;
+        right: 25px;
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+    .copy-btn:hover {
+        background: #0056b3;
+    }
+</style>
+<!-- Content Header -->
+<section class="content-header">
+    <h1>Коды Python</h1>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Custom Tabs -->
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab_1" data-toggle="tab">Код 1</a></li>
+                    <li><a href="#tab_2" data-toggle="tab">Код 2</a></li>
+                    <li><a href="#tab_3" data-toggle="tab">Код 3</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab_1">
+                        <button class="copy-btn" onclick="copyCode('code_1')">Copy</button>
+                        <textarea id="code_1">import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import gamma
+
+def filtration():
+    k0 = 1e-13
+    myu0 = 1e-2
+    P0 = 5e+5
+    bet_y = 3e-10
+
+    tMax = 600
+
+    lv = 0
+    lp = 500
+    betta = 1
+    alf = 1
+
+    bet = 1 + betta
+
+    tau = 10
+    h = 0.05
+    L = 40
+    T = int(tMax / tau) + 1
+    N = int(L / h) + 1
+
+    # Initial and boundary conditions
+    P = np.zeros((T, N))
+    P[:, 0] = P0
+    U = np.zeros((T, N))
+    kap = k0 / (myu0 * bet_y)
+
+    for i in range(N):
+        P[1, i] = P[0, i]
+
+    kv = lv / ((tau ** bet) * gamma(3 - bet))
+    kp = lp / ((tau ** alf) * (h ** 2) * gamma(2 - alf))
+
+    kv1 = lv / ((tau ** betta) * gamma(2 - betta))  # velocity
+    kp2 = lp / ((tau ** alf) * gamma(2 - alf))  # velocity
+
+    A = kap / h ** 2 + kap * kp
+    B = 1 / tau + kv + 2 * kap / h ** 2 + 2 * kap * kp
+    C = kap / h ** 2 + kap * kp
+    alpha = np.zeros(N)
+    beta = np.zeros(N)
+    beta[1] = P0
+
+    for j in range(1, T - 1):
+        for i in range(1, N - 1):
+            sv = 0
+            for k in range(1, j):
+                sv += (P[k + 1, i] - 2 * P[k, i] + P[k - 1, i]) * ((j - k + 1) ** (2 - bet) - (j - k) ** (2 - bet))
+
+            sp1 = 0
+            sp2 = 0
+            sp3 = 0
+            st = 0
+            for k in range(j):
+                sp1 += (P[k + 1, i + 1] - P[k, i + 1]) * ((j - k + 1) ** (1 - alf) - (j - k) ** (1 - alf))
+                sp2 += (P[k + 1, i] - P[k, i]) * ((j - k + 1) ** (1 - alf) - (j - k) ** (1 - alf))
+                sp3 += (P[k + 1, i - 1] - P[k, i - 1]) * ((j - k + 1) ** (1 - alf) - (j - k) ** (1 - alf))
+                st += (U[k + 1, i] - U[k, i]) * ((j - k + 1) ** (1 - betta) - (j - k) ** (1 - betta))  # velocity
+
+        for i in range(1, N - 1):
+            F = (P[j, i] / tau - kv * sv + 2 * kv * P[j, i] - kv * P[j - 1, i] +
+                 kp * kap * sp1 - kap * kp * P[j, i + 1] - 2 * kap * kp * sp2 +
+                 2 * kap * kp * P[j, i] + kap * kp * sp3 - kap * kp * P[j, i - 1])
+
+            alpha[i + 1] = C / (B - A * alpha[i])
+            beta[i + 1] = (F + A * beta[i]) / (B - A * alpha[i])
+
+        P[j + 1, N - 1] = 0
+        for i in range(N - 2, -1, -1):
+            P[j + 1, i] = alpha[i + 1] * P[j + 1, i + 1] + beta[i + 1]
+
+        for i in range(N - 1):
+            U[j + 1, i] = abs((-k0 * (P[j + 1, i + 1] - P[j + 1, i] +
+                                         kp2 * (sp1 + P[j + 1, i + 1] - P[j, i + 1] - sp2 - P[j + 1, i] + P[j, i])) /
+                                         (myu0 * h * (1 + kv1)) - (kv1 * st - kv1 * U[j, i]) / (1 + kv1)))
+
+        U[j + 1, N - 1] = U[j + 1, N - 2]  # velocity
+        print(j)
+
+    # U[T-2, 0:N]  # velocity
+    print(P[T - 2, 0:N])
+    # plt.plot(np.arange(0, N) * h, abs(U[T - 1, 0:N]))  # velocity
+    plt.plot(np.arange(0, N) * h, P[T - 1, 0:N])
+    plt.show()
+
+filtration()
+
+                        </textarea>
+                    </div>
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="tab_2">
+                        <button class="copy-btn" onclick="copyCode('code_2')">Copy</button>
+                        <textarea id="code_2">import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import gamma
+
+def filtration():
+    """
+    This program calculates fractional derivatives of second order in time and
+    first order in time.
+    """
+
+    k0 = 1e-14
+    myu0 = 1.768e-3
+    P0 = 5e+5
+    bet_y = 3e-8
+
+    tMax = 1800
+    lv = 100
+    lp = 500
+    betta = 0.9
+    alf = 0.7
+
+    bet = 1 + betta
+
+    g0 = 1e+5
+
+    tau = 10
+    h = 0.05
+    L = 5
+    T = int(tMax / tau + 1)
+    N = int(L / h + 1)
+
+    dx = np.zeros((T, N))
+    P = np.zeros((T, N))
+    U = np.zeros((T, N))
+    vaqt = np.zeros(N)
+
+    kap = k0 / (myu0 * bet_y)
+
+    P[:, 0] = P0
+    P[0, :] = 0
+    P[:, N - 1] = 0
+    U[:, :] = 0
+
+    for i in range(N):
+        P[1, i] = P[0, i]
+
+    kv = lv / (tau**bet * gamma(3 - bet))
+    kp = lp / (tau**alf * h**2 * gamma(2 - alf))
+
+    kv1 = lv / (tau**betta * gamma(2 - betta))
+    kp2 = lp / (tau**alf * gamma(2 - alf))
+
+    A = kap / h**2 + kap * kp
+    B = 1 / tau + kv + 2 * kap / h**2 + 2 * kap * kp
+    C = kap / h**2 + kap * kp
+    alpha = np.zeros(N)
+    beta = np.zeros(N)
+    alpha[1] = 0
+    beta[1] = P0
+
+    for j in range(1, T - 1):
+        for i in range(1, N - 1):
+            sv = 0
+            for k in range(1, j):
+                sv += (P[k + 1, i] - 2 * P[k, i] + P[k - 1, i]) * ((j - k + 1)**(2 - bet) - (j - k)**(2 - bet))
+
+            sp1 = 0
+            sp2 = 0
+            sp3 = 0
+            st = 0
+            for k in range(j):
+                sp1 += (P[k + 1, i + 1] - P[k, i + 1]) * ((j - k + 1)**(1 - alf) - (j - k)**(1 - alf))
+                sp2 += (P[k + 1, i] - P[k, i]) * ((j - k + 1)**(1 - alf) - (j - k)**(1 - alf))
+                sp3 += (P[k + 1, i - 1] - P[k, i - 1]) * ((j - k + 1)**(1 - alf) - (j - k)**(1 - alf))
+                st += (U[k + 1, i] - U[k, i]) * ((j - k + 1)**(1 - betta) - (j - k)**(1 - betta))
+
+        for i in range(1, N - 1):
+            F = (P[j, i] / tau - kv * sv + 2 * kv * P[j, i] - kv * P[j - 1, i] +
+                 kp * kap * sp1 - kap * kp * P[j, i + 1] - 2 * kap * kp * sp2 +
+                 2 * kap * kp * P[j, i] + kap * kp * sp3 - kap * kp * P[j, i - 1])
+
+            alpha[i + 1] = C / (B - A * alpha[i])
+            beta[i + 1] = (F + A * beta[i]) / (B - A * alpha[i])
+
+        for i in range(N - 2, 0, -1):
+            P[j + 1, i] = alpha[i + 1] * P[j + 1, i + 1] + beta[i + 1]
+
+        for i in range(N - 1):
+            dx[j + 1, i] = abs((P[j + 1, i + 1] - P[j + 1, i]) / h)
+
+        for i in range(2, N - 1):
+            if abs((P[j + 1, i] - P[j + 1, i - 1]) / h) > g0:
+                if (P[j + 1, i] - P[j + 1, i - 1]) / h > 0:
+                    U[j + 1, i] = abs((-k0 * (P[j + 1, i + 1] - P[j + 1, i] - g0 * h +
+                                         kp2 * (sp1 + P[j + 1, i + 1] - P[j, i + 1] -
+                                                sp2 - P[j + 1, i] + P[j, i])) /
+                                        (myu0 * h * (1 + kv1))) - (kv1 * st - kv1 * U[j, i]) / (1 + kv1))
+                    if j == T - 2:
+                        print(i)
+                else:
+                    U[j + 1, i] = abs((-k0 * (g0 * h + (P[j + 1, i + 1] - P[j + 1, i]) +
+                                         kp2 * (sp1 + P[j + 1, i + 1] - P[j, i + 1] -
+                                                sp2 - P[j + 1, i] + P[j, i])) /
+                                        (myu0 * h * (1 + kv1))) - (kv1 * st - kv1 * U[j, i]) / (1 + kv1))
+            else:
+                U[j + 1, i] = abs(-(kv1 * st - kv1 * U[j, i]) / (1 + kv1))
+
+        U[j + 1, N - 1] = U[j + 1, N - 2]
+        print(j)
+
+        for i in range(N - 1):
+            if dx[j + 1, i] >= g0 and vaqt[i] == 0:
+                vaqt[i] = j * tau
+
+    print(U[T - 2, :])
+    plt.plot(np.arange(N) * h, abs(U[T - 2, :]))
+    plt.show()
+    #plt.plot(np.arange(N) * h, P[T - 1, :])
+    #plt.plot(np.arange(N - 1) * h, dx[T - 1, :])
+    #print(dx[T - 2, :])
+    #print(U[:, 8])
+    #plt.plot(np.arange(T) * tau, U[:, 8])
+    #plt.plot(np.arange(N - 1) * h, vaqt[:N-1])
+    #print(vaqt)
+
+    np.set_printoptions(precision=16)
+    plt.hold = True
+    return
+filtration()
+                        </textarea>
+                    </div>
+                    <!-- /.tab-pane -->
+                    <div class="tab-pane" id="tab_3">
+                        <button class="copy-btn" onclick="copyCode('code_3')">Copy</button>
+                        <textarea id="code_3">import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import gamma
+import math
+
+def filtration():
+    """
+    This program calculates fractional derivatives of second order in time and
+    first order in time.
+    """
+
+    k0 = 1e-13
+    myu0 = 1e-2
+    Pc = 150e+5
+    Pk = 200e+5
+    bet_y = 3e-10
+
+    tMax = 3600
+
+    lv = 1000
+    lp = 500
+    betta = 0.7
+    alf = 1
+
+    bet = 1 + betta
+
+    tau = 100
+    h = 0.05
+    L = 40
+    T = int(tMax / tau + 1)
+    N = int(L / h + 1)
+
+    rc = 0.1
+    Nc = math.floor(rc / h) + 1
+
+    P = np.zeros((T, N))
+    U = np.zeros((T, N))
+
+    P[:, :Nc] = Pc
+    P[0, Nc:] = Pk
+    P[:, N - 1] = Pk
+    U[:, :] = 0
+
+    kap = k0 / (myu0 * bet_y)
+
+    for i in range(3, N):
+        P[1, i] = P[0, i]
+
+    kv = lv / (tau**bet * gamma(3 - bet))
+    kp = lp / (tau**alf * h**2 * gamma(2 - alf))
+
+    kv1 = lv / (tau**betta * gamma(2 - betta))
+    kp2 = lp / (tau**alf * gamma(2 - alf))
+
+    for j in range(1, T - 1):
+        for i in range(3, N - 1):
+            sv = 0
+            for k in range(1, j):
+                sv += (P[k + 1, i] - 2 * P[k, i] + P[k - 1, i]) * ((j - k + 1)**(2 - bet) - (j - k)**(2 - bet))
+
+            sp1 = 0
+            sp2 = 0
+            sp3 = 0
+            st = 0
+            for k in range(j):
+                sp1 += (P[k + 1, i + 1] - P[k, i + 1]) * ((j - k + 1)**(1 - alf) - (j - k)**(1 - alf))
+                sp2 += (P[k + 1, i] - P[k, i]) * ((j - k + 1)**(1 - alf) - (j - k)**(1 - alf))
+                sp3 += (P[k + 1, i - 1] - P[k, i - 1]) * ((j - k + 1)**(1 - alf) - (j - k)**(1 - alf))
+                st += (U[k + 1, i] - U[k, i]) * ((j - k + 1)**(1 - betta) - (j - k)**(1 - betta))
+
+        alpha = np.zeros(N)
+        beta = np.zeros(N)
+        alpha[4] = 0
+        beta[4] = Pc
+
+        for i in range(4, N - 1):
+            r1 = (2 * i * h - h) / 2
+            r0 = (2 * i * h - 3 * h) / 2
+            A = kap * (r0 / h**2 + kp * r0) / ((i - 1) * h)
+            B = kap * ((r1 + r0) / h**2 + kp * (r1 + r0)) / ((i - 1) * h) + kv + 1 / tau
+            C = kap * (r1 / h**2 + kp * r1) / ((i - 1) * h)
+            F = P[j, i] / tau - kv * sv + 2 * kv * P[j, i] - kv * P[j - 1, i] + \
+                (kap * kp * r1 * sp1) / ((i - 1) * h) - (kap * kp * r1 * P[j, i + 1]) / ((i - 1) * h) - \
+                (kap * kp * (r0 + r1) * sp2) / ((i - 1) * h) + (kap * kp * (r1 + r0) * P[j, i]) / ((i - 1) * h) + \
+                (kap * kp * r0 * sp3) / ((i - 1) * h) - (kap * kp * r0 * P[j, i - 1]) / ((i - 1) * h)
+
+            alpha[i + 1] = C / (B - A * alpha[i])
+            beta[i + 1] = (F + A * beta[i]) / (B - A * alpha[i])
+
+        for i in range(N - 2, 3, -1):
+            P[j + 1, i] = alpha[i + 1] * P[j + 1, i + 1] + beta[i + 1]
+
+        for i in range(2, N - 1):
+            U[j + 1, i] = abs((k0 * (P[j + 1, i + 1] - P[j + 1, i] + kp2 * (sp1 + P[j + 1, i + 1] - P[j, i + 1] - sp2 - P[j + 1, i] + P[j, i])) / (myu0 * h * (1 + kv1))) - (kv1 * st - kv1 * U[j, i]) / (1 + kv1))
+
+        U[j + 1, N - 1] = U[j + 1, N - 2]
+        print(j)
+
+    print(P[T - 2, :])
+    plt.plot(np.arange(N) * h, P[T - 1, :])
+    plt.show()
+
+    np.set_printoptions(precision=16)
+    plt.hold = True
+
+filtration()</textarea>
+                    </div>
+                    <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+            </div>
+            <!-- nav-tabs-custom -->
+        </div>
+    </div>
+</section>
+
+<!-- CodeMirror Library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/python/python.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function setupCodeMirror(id) {
+            CodeMirror.fromTextArea(document.getElementById(id), {
+                mode: "python",
+                theme: "default",
+                lineNumbers: true,
+                readOnly: true
+            });
+        }
+        setupCodeMirror("code_1");
+        setupCodeMirror("code_2");
+        setupCodeMirror("code_3");
+    });
+
+    function copyCode(id) {
+        let textarea = document.getElementById(id);
+        console.log(textarea)
+        if (textarea && textarea.dataset.cmInstance) {
+            let editor = textarea.dataset.cmInstance;
+            let text = editor.getValue(); // CodeMirror tarkibini olish
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied!");
+            }).catch(err => {
+                console.error("Copy failed:", err);
+            });
+        }
+    }
+</script>
+
+{% endblock %}

@@ -28,7 +28,7 @@
 </style>
 
 <section class="content-header">
-    <h1>Результаты расчетов</h1>
+    <h1>Результаты расчетов - {{ form_id }}</h1>
 </section>
 
 <section class="content">
@@ -46,14 +46,33 @@
                 <div class="col-md-6">
                     <canvas id="chart" style="display: none;"></canvas>
                 </div>
+                <div class="col-md-6">
+                    <div class="my-2 float-right">
+                        <button onclick="exportTableToExcel('results-table')" class="btn btn-info">Сохранить как Excel</button>
+                        <button onclick="printPDF()" class="btn btn-success">Сохранить как PDF</button>
+                        <a href="{% url 'home' %}" class="btn btn-primary">Назад</a>
+                    </div>
+
+                    <table class="table table-bordered" id="results-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Расстояние</th>
+                                <th>Давление</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             
-            <a href="{% url 'home' %}" class="btn btn-primary">Назад</a>
         </div>
     </div>
 </section>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 <script>
     $(document).ready(function () {
         function getCookie(name) {
@@ -70,8 +89,9 @@
             }
             return cookieValue;
         }
+    
         const csrftoken = getCookie('csrftoken');
-
+    
         function sendDataToFunction(form_id, data, functionUrl, callback) {
             $.ajax({
                 type: "POST",
@@ -87,76 +107,25 @@
                 }
             });
         }
-
-        const form_id = {{ form_id }};
+    
+        const form_id = "{{ form_id }}";
         const data = {{ data|safe }};
-        sendDataToFunction(form_id, data, '/calculate/' + form_id + '/', function (response) {
-                $('#data').html(response.data);
-                $('#loader-container').hide();
-                $('#data').show();
-
-                const ctx = document.getElementById('chart').getContext('2d');
-
-                const chartData = response.data;
-                const datasets = [];
-
-                const colors = {
-                    "1.0": "rgba(255, 99, 132, 1)",
-                    "0.7": "rgba(54, 162, 235, 1)",
-                    "0.5": "rgba(75, 192, 192, 1)"
-                };
-
-                Object.keys(chartData).forEach(key => {
-                    datasets.push({
-                        label: `α = ${key}`,
-                        data: chartData[key].y,
-                        borderColor: colors[key],
-                        borderWidth: 2,
-                        fill: false
-                    });
-                });
-
-                const myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: chartData[1.0].x, 
-                        datasets: datasets
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Distance'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Pressure'
-                                }
-                            }
-                        }
-                    }
-                });
-
-                $('#chart').show();
-            });
+    
+        sendDataToFunction(form_id, data, `/calculate/${form_id}/`, function (response) {
             $('#data').html(response.data);
             $('#loader-container').hide();
             $('#data').show();
-
-            const chartData = response.data;
+    
             const ctx = document.getElementById('chart').getContext('2d');
-            const myChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: chartData.x,
+                    labels: response.data.x, 
                     datasets: [{
-                        label: 'Pressure',
-                        data: chartData.y,
+                        label: 'Давление',
+                        data: response.data.y,
                         borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -164,21 +133,44 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Distance'
+                                text: 'Расстояние'
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Pressure'
+                                text: 'Давление'
                             }
                         }
                     }
                 }
             });
+    
             $('#chart').show();
+    
+            let tableBody = '';
+            for (let i = 0; i < response.data.x.length; i++) {
+                tableBody += `<tr><td>${response.data.x[i]}</td><td>${response.data.y[i]}</td></tr>`;
+            }
+            $('#results-table tbody').html(tableBody);
+            $('#results-table').show();
         });
     });
+    
+    function printPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFont("helvetica", "normal");
+        doc.text("Результаты расчетов", 10, 10, { encoding: "UTF-8" });
+        doc.autoTable({ html: '#results-table', styles: { font: "helvetica", encoding: "UTF-8" } });
+        doc.save("calculation_results.pdf");
+    }
+
+    function exportTableToExcel(tableID) {
+        let table = document.getElementById(tableID);
+        let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+        XLSX.writeFile(wb, "calculation_results.xlsx");
+    }
 </script>
 
 {% endblock %}

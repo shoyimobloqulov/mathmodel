@@ -61,6 +61,8 @@
         </div>
     </div>
 
+    
+
     <!-- Card to display PDF -->
     <div id="pdfCard" class="box" style="display: none; margin-top: 20px;">
         <div class="box-header with-border">
@@ -79,6 +81,16 @@
         <div class="box-footer">
             <button onclick="hideCard()" class="btn btn-danger">Закрыть</button>
             <a id="start" class="btn btn-primary pull-right" href="#">НАЧАТЬ</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box">
+                <div class="box-body">
+                    <canvas id="accessChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -111,6 +123,33 @@
     function hideCard() {
         document.getElementById('pdfCard').style.display = 'none';
     }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var chartData = JSON.parse('{{ chart_data | safe }}');
+
+    var ctx = document.getElementById('accessChart').getContext('2d');
+    var accessChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Количество просмотров страниц',
+                data: chartData.data,
+                borderColor: 'blue',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 </script>
 
 <!-- Custom CSS -->

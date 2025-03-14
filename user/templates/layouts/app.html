@@ -7,17 +7,22 @@
     <title>Моделирование | Домашняя страница</title>
     <!-- Tell the browser to be responsive to screen width -->
     {% load static %}
+    <link rel="icon" href="{% static 'pi.png' %}" type="image/x-icon">
+
     <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
+
     <!-- Ionicons -->
-    <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}"> <!-- Theme style -->
+    <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'dist/css/AdminLTE.min.css' %}">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="{% static 'dist/css/skins/_all-skins.min.css' %}"> <!-- Morris chart -->
-    <link rel="stylesheet" href="{% static 'bower_components/morris.js/morris.css' %}"> <!-- jvectormap -->
-    <link rel="stylesheet" href="{% static 'bower_components/jvectormap/jquery-jvectormap.css' %}"> <!-- Date Picker -->
+
+    {% comment %} Morris {% endcomment %}
+    <link rel="stylesheet" href="{% static 'dist/css/skins/_all-skins.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'bower_components/morris.js/morris.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/jvectormap/jquery-jvectormap.css' %}">
     <link rel="stylesheet"
         href="{% static 'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}">
     <!-- Daterange picker -->
@@ -29,8 +34,6 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
-    <script type="text/javascript" async
-        src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script type="text/javascript" async
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
     </script>
@@ -60,186 +63,85 @@
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark" style="display: none;">
-            <!-- Create the tabs -->
+            <!-- Создание вкладок -->
             <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
                 <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
                 <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
             </ul>
-            <!-- Tab panes -->
+            <!-- Панели вкладок -->
             <div class="tab-content">
-                <!-- Home tab content -->
+                <!-- Содержимое вкладки "Главная" -->
                 <div class="tab-pane" id="control-sidebar-home-tab">
-                    <h3 class="control-sidebar-heading">Recent Activity</h3>
-                    <ul class="control-sidebar-menu">
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-
-                                    <p>Will be 23 on April 24th</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-user bg-yellow"></i>
-
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-
-                                    <p>New phone +1(800)555-1234</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
-
-                                    <p>nora@example.com</p>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <i class="menu-icon fa fa-file-code-o bg-green"></i>
-
-                                <div class="menu-info">
-                                    <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-
-                                    <p>Execution time 5 seconds</p>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
+                    
                     <!-- /.control-sidebar-menu -->
-
-                    <h3 class="control-sidebar-heading">Tasks Progress</h3>
-                    <ul class="control-sidebar-menu">
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                                    Custom Template Design
-                                    <span class="label label-danger pull-right">70%</span>
-                                </h4>
-
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                                    Update Resume
-                                    <span class="label label-success pull-right">95%</span>
-                                </h4>
-
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                                    Laravel Integration
-                                    <span class="label label-warning pull-right">50%</span>
-                                </h4>
-
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-                                </div>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0)">
-                                <h4 class="control-sidebar-subheading">
-                                    Back End Framework
-                                    <span class="label label-primary pull-right">68%</span>
-                                </h4>
-
-                                <div class="progress progress-xxs">
-                                    <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- /.control-sidebar-menu -->
-
                 </div>
                 <!-- /.tab-pane -->
-                <!-- Stats tab content -->
-                <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+                <!-- Содержимое вкладки "Статистика" -->
+                <div class="tab-pane" id="control-sidebar-stats-tab">Содержимое вкладки "Статистика"</div>
                 <!-- /.tab-pane -->
-                <!-- Settings tab content -->
+                <!-- Содержимое вкладки "Настройки" -->
                 <div class="tab-pane" id="control-sidebar-settings-tab">
                     <form method="post">
-                        <h3 class="control-sidebar-heading">General Settings</h3>
-
+                        <h3 class="control-sidebar-heading">Общие настройки</h3>
+        
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                Report panel usage
+                                Использование панели отчетов
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
-
+        
                             <p>
-                                Some information about this general settings option
+                                Некоторая информация об этом параметре настройки
                             </p>
                         </div>
                         <!-- /.form-group -->
-
+        
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                Allow mail redirect
+                                Разрешить перенаправление почты
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
-
+        
                             <p>
-                                Other sets of options are available
+                                Доступны другие параметры
                             </p>
                         </div>
                         <!-- /.form-group -->
-
+        
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                Expose author name in posts
+                                Показывать имя автора в постах
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
-
+        
                             <p>
-                                Allow the user to show his name in blog posts
+                                Разрешить пользователю показывать свое имя в блогах
                             </p>
                         </div>
                         <!-- /.form-group -->
-
-                        <h3 class="control-sidebar-heading">Chat Settings</h3>
-
+        
+                        <h3 class="control-sidebar-heading">Настройки чата</h3>
+        
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                Show me as online
+                                Показывать меня онлайн
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
                         </div>
                         <!-- /.form-group -->
-
+        
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                Turn off notifications
+                                Отключить уведомления
                                 <input type="checkbox" class="pull-right">
                             </label>
                         </div>
                         <!-- /.form-group -->
-
+        
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
-                                Delete chat history
-                                <a href="javascript:void(0)" class="text-red pull-right"><i
-                                        class="fa fa-trash-o"></i></a>
+                                Удалить историю чата
+                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
                             </label>
                         </div>
                         <!-- /.form-group -->
@@ -248,6 +150,7 @@
                 <!-- /.tab-pane -->
             </div>
         </aside>
+        
         <!-- /.control-sidebar -->
         <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
