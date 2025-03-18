@@ -9,6 +9,9 @@
     {% load static %}
     <link rel="icon" href="{% static 'pi.png' %}" type="image/x-icon">
 
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
     <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
 
@@ -17,12 +20,13 @@
 
     <!-- Ionicons -->
     <link rel="stylesheet" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'bower_components/jvectormap/jquery-jvectormap.css' %}">
     <link rel="stylesheet" href="{% static 'dist/css/AdminLTE.min.css' %}">
 
     {% comment %} Morris {% endcomment %}
-    <link rel="stylesheet" href="{% static 'dist/css/skins/_all-skins.min.css' %}"> 
+    <link rel="stylesheet" href="{% static 'dist/css/skins/_all-skins.min.css' %}">
     <link rel="stylesheet" href="{% static 'bower_components/morris.js/morris.css' %}">
-    <link rel="stylesheet" href="{% static 'bower_components/jvectormap/jquery-jvectormap.css' %}">
     <link rel="stylesheet"
         href="{% static 'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css' %}">
     <!-- Daterange picker -->
@@ -34,14 +38,119 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script data-cfasync="false" nonce="12e346e2-2b02-4b8b-b73b-eab85584fe74">
+        try {
+            (function (w, d) {
+                ! function (j, k, l, m) {
+                    if (j.zaraz) console.error("zaraz is loaded twice");
+                    else {
+                        j[l] = j[l] || {};
+                        j[l].executed = [];
+                        j.zaraz = {
+                            deferred: [],
+                            listeners: []
+                        };
+                        j.zaraz._v = "5850";
+                        j.zaraz._n = "12e346e2-2b02-4b8b-b73b-eab85584fe74";
+                        j.zaraz.q = [];
+                        j.zaraz._f = function (n) {
+                            return async function () {
+                                var o = Array.prototype.slice.call(arguments);
+                                j.zaraz.q.push({
+                                    m: n,
+                                    a: o
+                                })
+                            }
+                        };
+                        for (const p of ["track", "set", "debug"]) j.zaraz[p] = j.zaraz._f(p);
+                        j.zaraz.init = () => {
+                            var q = k.getElementsByTagName(m)[0],
+                                r = k.createElement(m),
+                                s = k.getElementsByTagName("title")[0];
+                            s && (j[l].t = k.getElementsByTagName("title")[0].text);
+                            j[l].x = Math.random();
+                            j[l].w = j.screen.width;
+                            j[l].h = j.screen.height;
+                            j[l].j = j.innerHeight;
+                            j[l].e = j.innerWidth;
+                            j[l].l = j.location.href;
+                            j[l].r = k.referrer;
+                            j[l].k = j.screen.colorDepth;
+                            j[l].n = k.characterSet;
+                            j[l].o = (new Date).getTimezoneOffset();
+                            if (j.dataLayer)
+                                for (const t of Object.entries(Object.entries(dataLayer).reduce(((u, v) => ({
+                                        ...u[1],
+                                        ...v[1]
+                                    })), {}))) zaraz.set(t[0], t[1], {
+                                    scope: "page"
+                                });
+                            j[l].q = [];
+                            for (; j.zaraz.q.length;) {
+                                const w = j.zaraz.q.shift();
+                                j[l].q.push(w)
+                            }
+                            r.defer = !0;
+                            for (const x of [localStorage, sessionStorage]) Object.keys(x || {}).filter((z => z
+                                .startsWith("_zaraz_"))).forEach((y => {
+                                try {
+                                    j[l]["z_" + y.slice(7)] = JSON.parse(x.getItem(y))
+                                } catch {
+                                    j[l]["z_" + y.slice(7)] = x.getItem(y)
+                                }
+                            }));
+                            r.referrerPolicy = "origin";
+                            r.src = "/cdn-cgi/zaraz/s.js?z=" + btoa(encodeURIComponent(JSON.stringify(j[l])));
+                            q.parentNode.insertBefore(r, q)
+                        };
+                        ["complete", "interactive"].includes(k.readyState) ? zaraz.init() : j.addEventListener(
+                            "DOMContentLoaded", zaraz.init)
+                    }
+                }(w, d, "zarazData", "script");
+                window.zaraz._p = async bs => new Promise((bt => {
+                    if (bs) {
+                        bs.e && bs.e.forEach((bu => {
+                            try {
+                                const bv = d.querySelector("script[nonce]"),
+                                    bw = bv ? .nonce || bv ? .getAttribute("nonce"),
+                                    bx = d.createElement("script");
+                                bw && (bx.nonce = bw);
+                                bx.innerHTML = bu;
+                                bx.onload = () => {
+                                    d.head.removeChild(bx)
+                                };
+                                d.head.appendChild(bx)
+                            } catch (by) {
+                                console.error(`Error executing script: ${bu}\n`, by)
+                            }
+                        }));
+                        Promise.allSettled((bs.f || []).map((bz => fetch(bz[0], bz[1]))))
+                    }
+                    bt()
+                }));
+                zaraz._p({
+                    "e": ["(function(w,d){})(window,document)"]
+                });
+            })(window, document)
+        } catch (e) {
+            throw fetch("/cdn-cgi/zaraz/t"), e;
+        };
+    </script>
     <script type="text/javascript" async
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
     </script>
 </head>
 
+</head>
+
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
-
         {% include 'layouts/navbar.html' %}
         <!-- Left side column. contains the logo and sidebar -->
         {% include 'layouts/sidebar.html' %}
@@ -57,7 +166,8 @@
             <div class="pull-right hidden-xs">
                 <b>Version</b> 2.4.18
             </div>
-            <strong>Copyright &copy; 2024-{% now "Y" %} <a href="https://www.djangoproject.com/"> Django</a> and <a href="https://adminlte.io/">AdminLTE</a>.</strong> All rights
+            <strong>Copyright &copy; 2024-{% now "Y" %} <a href="https://www.djangoproject.com/"> Django</a> and <a
+                    href="https://adminlte.io/">AdminLTE</a>.</strong> All rights
             reserved.
         </footer>
 
@@ -72,7 +182,7 @@
             <div class="tab-content">
                 <!-- Содержимое вкладки "Главная" -->
                 <div class="tab-pane" id="control-sidebar-home-tab">
-                    
+
                     <!-- /.control-sidebar-menu -->
                 </div>
                 <!-- /.tab-pane -->
@@ -83,45 +193,45 @@
                 <div class="tab-pane" id="control-sidebar-settings-tab">
                     <form method="post">
                         <h3 class="control-sidebar-heading">Общие настройки</h3>
-        
+
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 Использование панели отчетов
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
-        
+
                             <p>
                                 Некоторая информация об этом параметре настройки
                             </p>
                         </div>
                         <!-- /.form-group -->
-        
+
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 Разрешить перенаправление почты
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
-        
+
                             <p>
                                 Доступны другие параметры
                             </p>
                         </div>
                         <!-- /.form-group -->
-        
+
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 Показывать имя автора в постах
                                 <input type="checkbox" class="pull-right" checked>
                             </label>
-        
+
                             <p>
                                 Разрешить пользователю показывать свое имя в блогах
                             </p>
                         </div>
                         <!-- /.form-group -->
-        
+
                         <h3 class="control-sidebar-heading">Настройки чата</h3>
-        
+
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 Показывать меня онлайн
@@ -129,7 +239,7 @@
                             </label>
                         </div>
                         <!-- /.form-group -->
-        
+
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 Отключить уведомления
@@ -137,11 +247,12 @@
                             </label>
                         </div>
                         <!-- /.form-group -->
-        
+
                         <div class="form-group">
                             <label class="control-sidebar-subheading">
                                 Удалить историю чата
-                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
+                                <a href="javascript:void(0)" class="text-red pull-right"><i
+                                        class="fa fa-trash-o"></i></a>
                             </label>
                         </div>
                         <!-- /.form-group -->
@@ -150,7 +261,7 @@
                 <!-- /.tab-pane -->
             </div>
         </aside>
-        
+
         <!-- /.control-sidebar -->
         <!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
