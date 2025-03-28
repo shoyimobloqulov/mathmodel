@@ -8,5 +8,6 @@ urlpatterns = [
     path('thesis',views.thesis,name="thesis"),
     path('scopus',views.scopus,name='scopus'),
     path('calculate/<int:id>/', views.calculate, name='calculate'),
-    path('code',views.code,name='code')
+    path('code',views.code,name='code'),
+    path('filtration_api/1', views.filtration_api, name='filtration_api'),
 ]

@@ -5,7 +5,7 @@
 {% block content %}
 <style>
     .loader {
-        border: 16px solid #f3f3f3; 
+        border: 16px solid #f3f3f3;
         border-top: 16px solid #3498db;
         border-radius: 50%;
         width: 120px;
@@ -15,8 +15,13 @@
     }
 
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     #loader-container {
@@ -34,143 +39,540 @@
 <section class="content">
     <div class="box">
         <div class="box-header with-border">
-            <h3 class="box-title">Результаты</h3>
+            <h3 class="box-title">Рис. 1</h3>
         </div>
         <div class="box-body">
-            <div id="loader-container">
-                <div class="loader" id="loader"></div>
-            </div>
-            <p id="data" style="display: none;">Loading results...</p>
-
             <div class="row">
-                <div class="col-md-6">
-                    <canvas id="chart" style="display: none;"></canvas>
+                <div class="col-md-9">
+                    <canvas id="filtrationChart1"></canvas>
                 </div>
-                <div class="col-md-6">
-                    <div class="my-2 float-right">
-                        <button onclick="exportTableToExcel('results-table')" class="btn btn-info">Сохранить как Excel</button>
-                        <button onclick="printPDF()" class="btn btn-success">Сохранить как PDF</button>
-                        <a href="{% url 'home' %}" class="btn btn-primary">Назад</a>
-                    </div>
-
-                    <table class="table table-bordered" id="results-table" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>Расстояние</th>
-                                <th>Давление</th>
-                            </tr>
-                        </thead>
+                <div class="col-md-3">
+                    <table id="dataTable1" class="table table-bordered">
                         <tbody></tbody>
                     </table>
                 </div>
             </div>
-            
         </div>
     </div>
+    
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Рис. 2</h3>
+        </div>
+        <div class="box-body">
+            <canvas id="filtrationChart2"></canvas>
+        </div>
+    </div>
+    
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Рис. 3</h3>
+        </div>
+        <div class="box-body">
+            <canvas id="filtrationChart3"></canvas>
+        </div>
+    </div>
+    
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Рис. 4</h3>
+        </div>
+        <div class="box-body">
+            <canvas id="filtrationChart4"></canvas>
+        </div>
+    </div>
+    
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Рис. 5</h3>
+        </div>
+        <div class="box-body">
+            <canvas id="filtrationChart5"></canvas>
+        </div>
+    </div>
+    
 </section>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
 <script>
     $(document).ready(function () {
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-    
-        const csrftoken = getCookie('csrftoken');
-    
-        function sendDataToFunction(form_id, data, functionUrl, callback) {
-            $.ajax({
-                type: "POST",
-                url: functionUrl,
-                headers: { "X-CSRFToken": csrftoken },
-                data: {
-                    'form_id': form_id,
-                    'data': JSON.stringify(data),
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function (response) {
-                    callback(response);
-                }
+        function updateTable() {
+            const tableBody = document.querySelector("#dataTable1 tbody");
+            tableBody.innerHTML = "";
+
+            const dict = {
+                "permeability": "Проницаемость среды \( k \)",
+                "fluid_viscosity": "Вязкость жидкости \( \mu \)",
+                "pressure": "Давление \(p_0\)",
+                "elastic_capacity_coefficient": "Коэффициент упругоемкости пласта \( \beta^\circ \)",
+                "relaxation_time1": "Время релаксации \(\lambda_v\)",
+                "relaxation_time2": "Время релаксации \(\lambda_p\)",
+                "grid_step_direction1": "Шаг сетки по направлению \(\tau\)",
+                "grid_step_direction2": "Шаг сетки по направлению \(h\)",
+                "fractional_derivative_time1": "Дробная производная по времени \(\alpha\)",
+                "fractional_derivative_time2": "Дробная производная по времени \(\beta\)",
+                "distance": "Расстояние \(L\)",
+                "maximum_time": "Максимальное время \(T_{\max}\)"
+            }            
+            const labels = {{ data | safe }};
+
+            Object.entries(labels).forEach(([label, index]) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td class="mathjax">${dict[label]}</td><td>${index}</td>`;
+                tableBody.appendChild(row);
             });
+
+            MathJax.typesetPromise();
         }
-    
-        const form_id = "{{ form_id }}";
-        const data = {{ data|safe }};
-    
-        sendDataToFunction(form_id, data, `/calculate/${form_id}/`, function (response) {
-            $('#data').html(response.data);
-            $('#loader-container').hide();
-            $('#data').show();
-    
-            const ctx = document.getElementById('chart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
+
+        updateTable();
+
+        function AlfaSolve() {
+            const baseUrl = "/filtration_api/1";
+            const alfas = [1, 0.7, 0.5]; // Alfa qiymatlari ketma-ket jo'natiladi
+            let labels = [];
+            
+            let data = {{ data | safe }}
+
+            // Boʻsh chart yaratish
+            const ctx = document.getElementById("filtrationChart1").getContext("2d");
+            const chart = new Chart(ctx, {
+                type: "line",
                 data: {
-                    labels: response.data.x, 
-                    datasets: [{
-                        label: 'Давление',
-                        data: response.data.y,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 2
-                    }]
+                    labels: labels,
+                    datasets: []
                 },
                 options: {
+                    responsive: true,
                     scales: {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Расстояние'
+                                text: "Расстояние"
+                            },
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    if (value % 100 === 0) {
+                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
+                                    }
+                                    return null; // Aks holda ko‘rsatmaymiz
+                                }
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Давление'
+                                text: "P (Давление)"
                             }
                         }
-                    }
+                    },
                 }
             });
-    
-            $('#chart').show();
-    
-            let tableBody = '';
-            for (let i = 0; i < response.data.x.length; i++) {
-                tableBody += `<tr><td>${response.data.x[i]}</td><td>${response.data.y[i]}</td></tr>`;
+
+            function fetchData(alf) {
+                data.fractional_derivative_time1 = alf.toString(); // Alfa qiymatini o‘zgartirish
+                const params = new URLSearchParams(data).toString();
+
+                return fetch(`${baseUrl}?${params}`)
+                    .then(response => response.json())
+                    .then(result => result.result)
+                    .catch(error => {
+                        console.error(`Xatolik yuz berdi (${alf}):`, error);
+                        return null;
+                    });
             }
-            $('#results-table tbody').html(tableBody);
-            $('#results-table').show();
-        });
+
+            async function processAlfas() {
+                for (let alf of alfas) {
+                    let result = await fetchData(alf); // Alfa ketma-ket jo'natiladi
+
+                    if (result) {
+                        let {
+                            pressure,
+                            velocity
+                        } = result;
+                        if (labels.length === 0) {
+                            labels = velocity; // Agar bo‘sh bo‘lsa, X-o‘qi sifatida velocity ishlatiladi
+                            chart.data.labels = labels;
+                        }
+
+                        let color = `hsl(${Math.random() * 360}, 70%, 50%)`; // Har xil rang yaratish
+                        chart.data.datasets.push({
+                            label: `α = ${alf}`,
+                            data: pressure,
+                            borderColor: color,
+                            backgroundColor: color,                       
+                            borderWidth: 1,
+                            fill: false
+                        });
+
+                        chart.update(); // Grafikni darhol yangilash
+                    }
+                }
+            }
+
+            processAlfas();
+        } 
+
+        function BettaSolve() {
+            const baseUrl = "/filtration_api/1";
+            const beta = [1, 0.7, 0.5]; // Alfa qiymatlari ketma-ket jo'natiladi
+            let labels = [];
+            
+            let data = {{ data | safe }}
+
+            // Boʻsh chart yaratish
+            const ctx = document.getElementById("filtrationChart2").getContext("2d");
+            const chart1 = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Расстояние"
+                            },
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    if (value % 100 === 0) {
+                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
+                                    }
+                                    return null; // Aks holda ko‘rsatmaymiz
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "P (Давление)"
+                            }
+                        }
+                    },
+                }
+            });
+
+            function fetchData1(beta) {
+                data.fractional_derivative_time2 = beta.toString(); // Alfa qiymatini o‘zgartirish
+                const params = new URLSearchParams(data).toString();
+
+                return fetch(`${baseUrl}?${params}`)
+                    .then(response => response.json())
+                    .then(result => result.result)
+                    .catch(error => {
+                        console.error(`Xatolik yuz berdi (${beta}):`, error);
+                        return null;
+                    });
+            }
+
+            async function processBettas() {
+                for (let b of beta) {
+                    let result = await fetchData1(b);
+
+                    if (result) {
+                        let {
+                            pressure,
+                            velocity
+                        } = result;
+                        if (labels.length === 0) {
+                            labels = velocity; // Agar bo‘sh bo‘lsa, X-o‘qi sifatida velocity ishlatiladi
+                            chart1.data.labels = labels;
+                        }
+
+                        let color = `hsl(${Math.random() * 360}, 70%, 50%)`; // Har xil rang yaratish
+                        chart1.data.datasets.push({
+                            label: `β = ${b}`,
+                            data: pressure,
+                            borderColor: color,
+                            backgroundColor: color,                       
+                            borderWidth: 1,
+                            fill: false
+                        });
+
+                        chart1.update(); // Grafikni darhol yangilash
+                    }
+                }
+            }
+
+            processBettas();
+        } 
+
+        function lambda_p() {
+            const baseUrl = "/filtration_api/1";
+            const lambda_p = [0, 500, 1000, 2000]; 
+            let labels = [];
+            
+            let data = {{ data | safe }}
+
+            // Boʻsh chart yaratish
+            const ctx = document.getElementById("filtrationChart3").getContext("2d");
+            const chart2 = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Расстояние"
+                            },
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    if (value % 100 === 0) {
+                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
+                                    }
+                                    return null; // Aks holda ko‘rsatmaymiz
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "P (Давление)"
+                            }
+                        }
+                    },
+                }
+            });
+
+            function fetchData2(lambda_p) {
+                data.relaxation_time2 = lambda_p.toString(); // Alfa qiymatini o‘zgartirish
+                const params = new URLSearchParams(data).toString();
+
+                return fetch(`${baseUrl}?${params}`)
+                    .then(response => response.json())
+                    .then(result => result.result)
+                    .catch(error => {
+                        console.error(`Xatolik yuz berdi (${lambda_p}):`, error);
+                        return null;
+                    });
+            }
+
+            async function processLambdaP() {
+                for (let b of lambda_p) {
+                    let result = await fetchData2(b);
+
+                    if (result) {
+                        let {
+                            pressure,
+                            velocity
+                        } = result;
+                        if (labels.length === 0) {
+                            labels = velocity; // Agar bo‘sh bo‘lsa, X-o‘qi sifatida velocity ishlatiladi
+                            chart2.data.labels = labels;
+                        }
+
+                        let color = `hsl(${Math.random() * 360}, 70%, 50%)`; // Har xil rang yaratish
+                        chart2.data.datasets.push({
+                            label: `Lambda(P) = ${b}`,
+                            data: pressure,
+                            borderColor: color,
+                            backgroundColor: color,                       
+                            borderWidth: 1,
+                            fill: false
+                        });
+
+                        chart2.update(); // Grafikni darhol yangilash
+                    }
+                }
+            }
+
+            processLambdaP();
+        } 
+
+        function lambda_v() {
+            const baseUrl = "/filtration_api/1";
+            const lambda_v = [0, 500, 1000, 2000]; 
+            let labels = [];
+            
+            let data = {{ data | safe }}
+
+            // Boʻsh chart yaratish
+            const ctx = document.getElementById("filtrationChart4").getContext("2d");
+            const chart3 = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Расстояние"
+                            },
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    if (value % 100 === 0) {
+                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
+                                    }
+                                    return null; // Aks holda ko‘rsatmaymiz
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "P (Давление)"
+                            }
+                        }
+                    },
+                }
+            });
+
+            function fetchData3(lambda_v) {
+                data.relaxation_time1 = lambda_v.toString(); // Alfa qiymatini o‘zgartirish
+                const params = new URLSearchParams(data).toString();
+
+                return fetch(`${baseUrl}?${params}`)
+                    .then(response => response.json())
+                    .then(result => result.result)
+                    .catch(error => {
+                        console.error(`Xatolik yuz berdi (${beta}):`, error);
+                        return null;
+                    });
+            }
+
+            async function processLambdaV() {
+                for (let b of lambda_v) {
+                    let result = await fetchData3(b);
+
+                    if (result) {
+                        let {
+                            pressure,
+                            velocity
+                        } = result;
+                        if (labels.length === 0) {
+                            labels = velocity; // Agar bo‘sh bo‘lsa, X-o‘qi sifatida velocity ishlatiladi
+                            chart3.data.labels = labels;
+                        }
+
+                        let color = `hsl(${Math.random() * 360}, 70%, 50%)`; // Har xil rang yaratish
+                        chart3.data.datasets.push({
+                            label: `Lambda(V) = ${b}`,
+                            data: pressure,
+                            borderColor: color,
+                            backgroundColor: color,                       
+                            borderWidth: 1,
+                            fill: false
+                        });
+
+                        chart3.update(); // Grafikni darhol yangilash
+                    }
+                }
+            }
+
+            processLambdaV();
+        } 
+
+        function tsolve() {
+            const baseUrl = "/filtration_api/1";
+            const T = [900,1800,3600];
+            let labels = [];
+            
+            let data = {{ data | safe }}
+
+            // Boʻsh chart yaratish
+            const ctx = document.getElementById("filtrationChart5").getContext("2d");
+            const chart3 = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Расстояние"
+                            },
+                            ticks: {
+                                callback: function (value, index, values) {
+                                    if (value % 100 === 0) {
+                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
+                                    }
+                                    return null; // Aks holda ko‘rsatmaymiz
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "P (Давление)"
+                            }
+                        }
+                    },
+                }
+            });
+
+            function fetchData4(T) {
+                data.maximum_time = T.toString(); // Alfa qiymatini o‘zgartirish
+                const params = new URLSearchParams(data).toString();
+
+                return fetch(`${baseUrl}?${params}`)
+                    .then(response => response.json())
+                    .then(result => result.result)
+                    .catch(error => {
+                        console.error(`Xatolik yuz berdi (${beta}):`, error);
+                        return null;
+                    });
+            }
+
+            async function processTVar() {
+                for (let b of T) {
+                    let result = await fetchData4(b);
+
+                    if (result) {
+                        let {
+                            pressure,
+                            velocity
+                        } = result;
+                        if (labels.length === 0) {
+                            labels = velocity; // Agar bo‘sh bo‘lsa, X-o‘qi sifatida velocity ishlatiladi
+                            chart3.data.labels = labels;
+                        }
+
+                        let color = `hsl(${Math.random() * 360}, 70%, 50%)`; // Har xil rang yaratish
+                        chart3.data.datasets.push({
+                            label: `T = ${b}`,
+                            data: pressure,
+                            borderColor: color,
+                            backgroundColor: color,                       
+                            borderWidth: 1,
+                            fill: false
+                        });
+
+                        chart3.update(); // Grafikni darhol yangilash
+                    }
+                }
+            }
+
+            processTVar();
+        } 
+
+        AlfaSolve()
+        BettaSolve()
+        lambda_p()
+        lambda_v()
+        tsolve()    
     });
     
-    function printPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFont("helvetica", "normal");
-        doc.text("Результаты расчетов", 10, 10, { encoding: "UTF-8" });
-        doc.autoTable({ html: '#results-table', styles: { font: "helvetica", encoding: "UTF-8" } });
-        doc.save("calculation_results.pdf");
-    }
-
-    function exportTableToExcel(tableID) {
-        let table = document.getElementById(tableID);
-        let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
-        XLSX.writeFile(wb, "calculation_results.xlsx");
-    }
 </script>
 
 {% endblock %}
