@@ -103,31 +103,42 @@
         function updateTable() {
             const tableBody = document.querySelector("#dataTable1 tbody");
             tableBody.innerHTML = "";
-
+        
             const dict = {
-                "permeability": "Проницаемость среды \( k \)",
-                "fluid_viscosity": "Вязкость жидкости \( \mu \)",
-                "pressure": "Давление \(p_0\)",
-                "elastic_capacity_coefficient": "Коэффициент упругоемкости пласта \( \beta^\circ \)",
-                "relaxation_time1": "Время релаксации \(\lambda_v\)",
-                "relaxation_time2": "Время релаксации \(\lambda_p\)",
-                "grid_step_direction1": "Шаг сетки по направлению \(\tau\)",
-                "grid_step_direction2": "Шаг сетки по направлению \(h\)",
-                "fractional_derivative_time1": "Дробная производная по времени \(\alpha\)",
-                "fractional_derivative_time2": "Дробная производная по времени \(\beta\)",
-                "distance": "Расстояние \(L\)",
-                "maximum_time": "Максимальное время \(T_{\max}\)"
-            }            
-            const labels = {{ data | safe }};
-
-            Object.entries(labels).forEach(([label, index]) => {
-                let row = document.createElement("tr");
-                row.innerHTML = `<td class="mathjax">${dict[label]}</td><td>${index}</td>`;
-                tableBody.appendChild(row);
+                "permeability": "Проницаемость среды \\( k \\)",
+                "fluid_viscosity": "Вязкость жидкости \\( \\mu \\)",
+                "pressure": "Давление \\( p_0 \\)",
+                "elastic_capacity_coefficient": "Коэффициент упругоемкости пласта \\( \\beta^\\circ \\)",
+                "relaxation_time1": "Время релаксации \\( \\lambda_v \\)",
+                "relaxation_time2": "Время релаксации \\( \\lambda_p \\)",
+                "grid_step_direction1": "Шаг сетки по направлению \\( \\tau \\)",
+                "grid_step_direction2": "Шаг сетки по направлению \\( h \\)",
+                "fractional_derivative_time1": "Дробная производная по времени \\( \\alpha \\)",
+                "fractional_derivative_time2": "Дробная производная по времени \\( \\beta \\)",
+                "distance": "Расстояние \\( L \\)",
+                "maximum_time": "Максимальное время \\( T_{\\max} \\)"
+            };
+        
+            const labels = {{ data | safe }}
+        
+            Object.entries(labels).forEach(([label, value]) => {
+                if (dict[label]) { // Agar kalit mavjud bo'lsa
+                    let row = document.createElement("tr");
+                    row.innerHTML = `<td class="mathjax">${dict[label]}</td><td>${value}</td>`;
+                    tableBody.appendChild(row);
+                }
             });
-
-            MathJax.typesetPromise();
+        
+            // MathJax ni yangilash
+            if (window.MathJax) {
+                MathJax.typesetPromise().then(() => {
+                    console.log("MathJax formulalar yangilandi");
+                }).catch(err => console.error("MathJax xatosi:", err));
+            } else {
+                console.error("MathJax yuklanmagan!");
+            }
         }
+        
 
         updateTable();
 
@@ -154,14 +165,6 @@
                                 display: true,
                                 text: "Расстояние"
                             },
-                            ticks: {
-                                callback: function (value, index, values) {
-                                    if (value % 100 === 0) {
-                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
-                                    }
-                                    return null; // Aks holda ko‘rsatmaymiz
-                                }
-                            }
                         },
                         y: {
                             title: {
@@ -241,14 +244,6 @@
                                 display: true,
                                 text: "Расстояние"
                             },
-                            ticks: {
-                                callback: function (value, index, values) {
-                                    if (value % 100 === 0) {
-                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
-                                    }
-                                    return null; // Aks holda ko‘rsatmaymiz
-                                }
-                            }
                         },
                         y: {
                             title: {
@@ -328,14 +323,6 @@
                                 display: true,
                                 text: "Расстояние"
                             },
-                            ticks: {
-                                callback: function (value, index, values) {
-                                    if (value % 100 === 0) {
-                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
-                                    }
-                                    return null; // Aks holda ko‘rsatmaymiz
-                                }
-                            }
                         },
                         y: {
                             title: {
@@ -415,14 +402,6 @@
                                 display: true,
                                 text: "Расстояние"
                             },
-                            ticks: {
-                                callback: function (value, index, values) {
-                                    if (value % 100 === 0) {
-                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
-                                    }
-                                    return null; // Aks holda ko‘rsatmaymiz
-                                }
-                            }
                         },
                         y: {
                             title: {
@@ -502,14 +481,6 @@
                                 display: true,
                                 text: "Расстояние"
                             },
-                            ticks: {
-                                callback: function (value, index, values) {
-                                    if (value % 100 === 0) {
-                                        return 5 * value / 100; // Agar 5 ga bo‘linadigan bo‘lsa, chiqaramiz
-                                    }
-                                    return null; // Aks holda ko‘rsatmaymiz
-                                }
-                            }
                         },
                         y: {
                             title: {
